@@ -1,0 +1,54 @@
+import (
+    "kumori.examples/dependency/component"
+    "kumori"
+)
+
+service EchoServer
+
+srv {
+    client { a "tcp" }
+    server { a "http" }
+    duplex { a { protocol "grpc", port 1337 } }
+}
+
+resource {
+    Port:    kumori.Port
+    Volume:  kumori.Volume
+}
+
+config   {
+    Port:       number
+    Response:   string
+    Scale:      number = 1
+}
+
+role {
+    EchoServer {
+        artifact component.EchoServer
+        config   {
+            Port        self.config.Port
+            Response    self.config.Response
+            Scale       self.config.Scale
+        }
+        resource {
+            Port        self.resource.Port
+            Volume      self.resource.Volume
+        }
+    }
+}
+
+connect {
+    ExampleConnection kumori.LoadBalancer({
+        from {
+            target "EchoServer"
+            channel "a"
+        }
+        to {
+            target "EchoServer"
+            channel "a"
+        }
+        meta {
+            test "Value"
+        }
+    })
+}

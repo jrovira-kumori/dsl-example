@@ -1,0 +1,59 @@
+package component
+
+import (
+    "kumori"
+    "strconv"
+)
+
+component EchoServer 
+
+var (
+    Port = strconv.Concat([":", strconv.Format(self.config.Port, 10)])
+)
+
+srv {
+    client { a "tcp" }
+    server { a "http" }
+    duplex { a { protocol "grpc", port 1337 } }
+}
+
+resource {
+    Port:    kumori.Port
+    Volume:  kumori.Volume
+}
+
+config {
+    Port:       number
+    Response:   string = "Hello world!"
+    Scale:      number = 1
+}
+
+scale self.config.Scale
+
+size {
+    bandwidth       10G
+    minbandwidth    1G
+    mincpu          1000m
+}
+
+code {
+    EchoServer {
+        cmd     ["-listen", var.Port, "-text", self.config.Response],
+        image   "docker.io/hashicorp/http-echo:latest",
+        size {
+            memory  500M,
+            cpu     400m,
+            mincpu  200m,
+        },
+
+        env {
+            MyEnvVar "hello",
+            Another  string(kumori.Port(string(self.resource.Port))),
+        },
+
+        fs {
+            "/config.json"  "123",
+            "/another.json" strconv.JSON({ A self.config })
+        },
+    }
+}
