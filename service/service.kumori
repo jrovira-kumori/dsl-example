@@ -5,34 +5,17 @@ import (
 
 service EchoServer
 
-srv {
-    client { a "tcp" }
-    server { a "http" }
-    duplex { a { protocol "grpc", port 1337 } }
-}
-
-resource {
-    Port:    kumori.Port
-    Volume:  kumori.Volume
-}
-
-config   {
-    Port:       number
-    Response:   string
-    Scale:      number = 1
-}
-
 role {
     EchoServer {
         artifact component.EchoServer
         config   {
-            Port        self.config.Port
-            Response    self.config.Response
-            Scale       self.config.Scale
+            Port        interface.config.Port
+            Response    interface.config.Response
+            Scale       interface.config.Scale
         }
         resource {
-            Port        self.resource.Port
-            Volume      self.resource.Volume
+            Port        interface.resource.Port
+            Volume      interface.resource.Volume
         }
     }
 }
