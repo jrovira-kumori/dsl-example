@@ -2,6 +2,6 @@
     "spec": "kumori/module/v1",
     "module": "github.com/jrovira-kumori/dsl-example",
     "kumori": "0.0.1",
-    "headers": { "target": "github.com/jrovira-kumori/dsl-example-headers", "version": "v1.2" },
+    "headers": { "target": "github.com/jrovira-kumori/dsl-example-header", "version": "v1.2" },
     "requires": []
 }
